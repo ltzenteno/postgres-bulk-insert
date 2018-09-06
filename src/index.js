@@ -15,7 +15,9 @@ const createUser = id => {
   return `${id},${name},${createRandomFirstSurname()},${createRandomSecondSurname()},${createEmail(name)},${createPassword()},1,1,t,t,f\n`;
 };
 
-createPerson = id => {
+const createPerson = id => {
+  const name = createRandomFirstName();
+  return `${id},${name},${createRandomFirstSurname()},${createRandomSecondSurname()},30,${id},1,1,${createEmail(name)},,1,INT,2018-08-28 15:21:04.239836,${id},t,f,{} \n`;
 };
 
 const createUsersFile = () => {
@@ -30,11 +32,16 @@ const createUsersFile = () => {
 };
 
 const createPersonsFile = () => {
-  const stream = fs = createWriteStream(path.join(`${__dirname}./../build/`, 'persons.csv'));
+  const stream = fs.createWriteStream(path.join(`${__dirname}./../build/`, 'persons.csv'));
   stream.once('open', fd => {
     stream.write('id,nombre,apellido_paterno,apellido_materno,edad,usuario_id,sucursal_id,tipo_persona_id,email,foto_perfil,perfil_base_id,prefijo,fecha_registro,digito,estatus,eliminado,adicionales \n');
+    for(let i=0;i<length;i++){
+      stream.write(createPerson(i+10));
+    }
+    stream.end();
   });
 };
 
 createUsersFile();
+createPersonsFile();
 console.log('done.');
