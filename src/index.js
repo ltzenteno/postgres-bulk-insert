@@ -8,21 +8,18 @@ const {
   createPassword
 } = require('./util');
 
-const createUser = () => {
+const createUser = id => {
   const name = createRandomFirstName();
-  return `insert into usuarios \
-(id, nombre, apellido_paterno, apellido_materno, email, password, idioma_id, rol_id, estatus, primer_visita, eliminado) \
-values \
-(nextval('usuarios_seq'), '${name}', '${createRandomFirstSurname()}', '${createRandomSecondSurname()}', '${createEmail(name)}', '${createPassword()}', 1, 1, 't', 't', 'f'); \n`;
+  return `${id},${name},${createRandomFirstSurname()},${createRandomSecondSurname()},${createEmail(name)},${createPassword()},1,1,t,t,f\n`;
 };
 
 const createUsersFile = () => {
   const length = 5;
-  const stream = fs.createWriteStream(path.join(`${__dirname}./../build/`, 'users-batch.sql'));
+  const stream = fs.createWriteStream(path.join(`${__dirname}./../build/`, 'users-batch.csv'));
   stream.once('open', fd => {
-    stream.write('set search_path to administracion; \n');
+    stream.write('id,nombre,apellido_paterno,apellido_materno,email,password,idioma_id,rol_id,estatus,primer_visita,eliminado \n');
     for(let i=0;i<length;i++){
-      stream.write(createUser());
+      stream.write(createUser(i+10));
     }
     stream.end();
   });
@@ -30,3 +27,8 @@ const createUsersFile = () => {
 
 createUsersFile();
 console.log('done.');
+
+// run the following command in psql:
+// \c khor2
+// COPY administracion.usuarios(id, nombre, apellido_paterno, apellido_materno, email, password, idioma_id, rol_id, estatus, primer_visita, eliminado) FROM '/Users/zenteno/Documents/workspace/indigo/human/generate-khor-dummy-users/build/users-batch.csv' DELIMITER ',' CSV HEADER;
+// you have to set the sequence manually after the insert
