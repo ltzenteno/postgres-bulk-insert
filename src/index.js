@@ -8,7 +8,7 @@ const {
   createPassword
 } = require('./util');
 
-const length = 5;
+const length = 50000;
 
 const createUser = id => {
   const name = createRandomFirstName();
